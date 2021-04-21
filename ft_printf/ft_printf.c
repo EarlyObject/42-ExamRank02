@@ -1,19 +1,12 @@
 # include <stdio.h>
 # include <stdarg.h>
 # include <unistd.h>
-#ifndef REAL
-# define F	r += ft_printf
-#else
-# define F	r += printf
-#endif
 
 int
 	ft_strlen(char *str)
 {
 	int i;
 
-	if (!str)
-		return (0);
 	i = 0;
 	while (*str++ != '\0')
 		i++;
@@ -26,10 +19,10 @@ int
 	unsigned int len;
 
 	len = 1;
-	while (num >= base_len || num <= -base_len)
+	while (num >= base_len)
 	{
-		num = num / base_len;
 		len++;
+		num = num / base_len;
 	}
 	return (len);
 }
@@ -37,9 +30,12 @@ int
 void
 	ft_putnbr(long long num, int base_len, char *base)
 {
+	char c;
+
 	if (num >= base_len)
 		ft_putnbr(num / base_len, base_len, base);
-	write(1, &base[num % base_len], 1);
+	c = base[(num % base_len)];
+	write(1, &c, 1);
 }
 
 int
@@ -87,12 +83,12 @@ int
 				base_len = 10;
 				base = "0123456789";
 				num = va_arg(list, int);
-				len = ft_numlen(num, base_len);
 				if (num < 0)
 				{
-				negative = 1;
-				num = -num;
+					negative = 1;
+					num = -num;
 				}
+				len = ft_numlen(num, base_len);
 			}
 			else if(*format == 'x')
 			{
@@ -132,14 +128,13 @@ int
 			else if (len)
 				ft_putnbr(num, base_len, base);
 			ret += len;
-			format++;
 		}
 		else
 		{
-		write(1, &*format, 1);
-		format++;
-		ret++;
+			write(1, &*format, 1);
+			ret++;
 		}
+		format++;
 	}
 	va_end(list);
 	return (ret);
